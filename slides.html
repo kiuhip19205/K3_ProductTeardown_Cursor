@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product Teardown — Cursor (Anysphere)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+  
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  @page { size: 1280px 720px landscape; margin: 0; }
+  
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #0a0a0a;
+    color: #e0e0e0;
+  }
+
+  .slide {
+    width: 1280px;
+    height: 720px;
+    padding: 60px 80px;
+    position: relative;
+    overflow: hidden;
+    page-break-after: always;
+    background: #0f0f13;
+  }
+
+  /* Slide 1: Title */
+  .slide-title {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: linear-gradient(135deg, #0f0f13 0%, #1a1a2e 50%, #0f0f13 100%);
+  }
+  .slide-title::before {
+    content: '';
+    position: absolute;
+    top: -200px; right: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .slide-title::after {
+    content: '';
+    position: absolute;
+    bottom: -150px; left: -150px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(16,185,129,0.1) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .slide-title .logo {
+    font-size: 72px;
+    margin-bottom: 8px;
+  }
+  .slide-title h1 {
+    font-size: 56px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 12px;
+    letter-spacing: -1px;
+  }
+  .slide-title .subtitle {
+    font-size: 26px;
+    color: #94a3b8;
+    font-weight: 400;
+    margin-bottom: 40px;
+  }
+  .slide-title .meta {
+    font-size: 18px;
+    color: #64748b;
+  }
+  .slide-title .meta strong { color: #94a3b8; }
+
+  /* Common slide header */
+  .slide-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 36px;
+  }
+  .slide-header .num {
+    font-size: 14px;
+    font-weight: 700;
+    color: #6366f1;
+    background: rgba(99,102,241,0.12);
+    padding: 6px 14px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+  }
+  .slide-header h2 {
+    font-size: 36px;
+    font-weight: 700;
+    color: #f1f5f9;
+    letter-spacing: -0.5px;
+  }
+
+  /* Timeline slides */
+  .timeline-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 28px;
+  }
+  .timeline-item {
+    display: flex;
+    gap: 14px;
+    padding: 14px 18px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 12px;
+    border-left: 3px solid #6366f1;
+  }
+  .timeline-item .year {
+    font-size: 13px;
+    font-weight: 700;
+    color: #6366f1;
+    white-space: nowrap;
+    min-width: 70px;
+    padding-top: 2px;
+  }
+  .timeline-item .content h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #e2e8f0;
+    margin-bottom: 4px;
+  }
+  .timeline-item .content p {
+    font-size: 12.5px;
+    color: #94a3b8;
+    line-height: 1.5;
+  }
+  .timeline-item .principle {
+    font-size: 12px;
+    font-weight: 600;
+    color: #10b981;
+    margin-top: 4px;
+    display: inline-block;
+    background: rgba(16,185,129,0.1);
+    padding: 2px 10px;
+    border-radius: 10px;
+  }
+
+  /* User segment slide */
+  .comparison-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 10px;
+  }
+  .comparison-table th {
+    text-align: left;
+    padding: 14px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #6366f1;
+    background: rgba(99,102,241,0.08);
+    border-bottom: 1px solid rgba(99,102,241,0.2);
+  }
+  .comparison-table th:first-child { border-radius: 12px 0 0 0; width: 160px; }
+  .comparison-table th:last-child { border-radius: 0 12px 0 0; }
+  .comparison-table td {
+    padding: 14px 20px;
+    font-size: 13.5px;
+    color: #cbd5e1;
+    line-height: 1.6;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    vertical-align: top;
+  }
+  .comparison-table td:first-child {
+    font-weight: 600;
+    color: #94a3b8;
+    font-size: 13px;
+  }
+
+  /* Forces grid */
+  .forces-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .force-card {
+    padding: 18px 22px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.03);
+  }
+  .force-card h4 {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .force-card p {
+    font-size: 12.5px;
+    color: #94a3b8;
+    line-height: 1.6;
+  }
+  .force-push h4 { color: #ef4444; }
+  .force-pull h4 { color: #10b981; }
+  .force-habit h4 { color: #f59e0b; }
+  .force-anxiety h4 { color: #6366f1; }
+
+  /* Prediction cards */
+  .predictions {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .prediction-card {
+    padding: 22px 28px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.03);
+    border-left: 4px solid;
+  }
+  .prediction-card:nth-child(1) { border-color: #ef4444; }
+  .prediction-card:nth-child(2) { border-color: #10b981; }
+  .prediction-card:nth-child(3) { border-color: #6366f1; }
+  .prediction-card .tag {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .prediction-card:nth-child(1) .tag { color: #ef4444; }
+  .prediction-card:nth-child(2) .tag { color: #10b981; }
+  .prediction-card:nth-child(3) .tag { color: #6366f1; }
+  .prediction-card h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #f1f5f9;
+    margin-bottom: 6px;
+  }
+  .prediction-card p {
+    font-size: 13px;
+    color: #94a3b8;
+    line-height: 1.6;
+  }
+
+  /* Closing slide */
+  .slide-closing {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: linear-gradient(135deg, #0f0f13 0%, #1a1a2e 50%, #0f0f13 100%);
+  }
+  .slide-closing h2 {
+    font-size: 48px;
+    font-weight: 800;
+    color: #f1f5f9;
+    margin-bottom: 16px;
+  }
+  .slide-closing p {
+    font-size: 22px;
+    color: #94a3b8;
+    max-width: 700px;
+    line-height: 1.6;
+  }
+  .slide-closing .key-insight {
+    margin-top: 40px;
+    padding: 24px 40px;
+    background: rgba(99,102,241,0.08);
+    border: 1px solid rgba(99,102,241,0.2);
+    border-radius: 16px;
+    max-width: 800px;
+  }
+  .slide-closing .key-insight p {
+    font-size: 18px;
+    color: #c4b5fd;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+<!-- SLIDE 1: Title -->
+<div class="slide slide-title">
+  <div class="logo">⌨️</div>
+  <h1>Product Teardown: Cursor</h1>
+  <div class="subtitle">Từ VS Code fork đến AI-native IDE trị giá $29B</div>
+  <div class="meta">
+    <strong>Kiều Thế Hiệp</strong> — 2A202601453<br>
+    K3 · Product Sense Lab
+  </div>
+</div>
+
+<!-- SLIDE 2: Timeline (Part 1) -->
+<div class="slide">
+  <div class="slide-header">
+    <span class="num">§1</span>
+    <h2>Timeline — 7 quyết định sản phẩm lớn</h2>
+  </div>
+  <div class="timeline-grid">
+    <div class="timeline-item">
+      <div class="year">Q1/2023</div>
+      <div class="content">
+        <h3>Fork VS Code — không làm extension</h3>
+        <p>Copilot thống trị dạng plugin. Cursor chọn "root access" vào editor để tạo trải nghiệm không thể làm bằng extension.</p>
+        <span class="principle">x10 vs x2</span>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="year">10/2023</div>
+      <div class="content">
+        <h3>Seed $8M từ OpenAI Startup Fund</h3>
+        <p>Funding từ chính nhà cung cấp model → tiếp cận sớm model mới → trải nghiệm tốt hơn → nhiều user hơn.</p>
+        <span class="principle">Vòng lặp học (Learning loop)</span>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="year">Q2/2024</div>
+      <div class="content">
+        <h3>Tab — "next-action prediction"</h3>
+        <p>Đổi đơn vị đo từ "dòng code" sang "thao tác developer". Không chỉ gợi ý code mà nhảy đến vị trí tiếp theo cần sửa.</p>
+        <span class="principle">Đổi đơn vị đo "tốt"</span>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="year">08/2024</div>
+      <div class="content">
+        <h3>Series A $60M — valuation $400M</h3>
+        <p>User import VS Code settings → phụ thuộc deep features → switching cost tăng dần. Fork lúc đầu bắt đầu thành moat.</p>
+        <span class="principle">Moat từ switching cost</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: Timeline (Part 2) -->
+<div class="slide">
+  <div class="slide-header">
+    <span class="num">§1</span>
+    <h2>Timeline — tiếp</h2>
+  </div>
+  <div class="timeline-grid">
+    <div class="timeline-item">
+      <div class="year">10/2025</div>
+      <div class="content">
+        <h3>Cursor 2.0 — Agent Mode + Composer</h3>
+        <p>Devin gây chấn động → buộc phải trả lời "agentic hay không?". Cursor tập trung domain expertise (hiểu workflow dev) thay vì build model.</p>
+        <span class="principle">Vertical AI — AI Expert + Domain Expert</span>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="year">06/2025</div>
+      <div class="content">
+        <h3>Đổi pricing: request → usage-based</h3>
+        <p>$500M ARR. Chi phí inference tăng mạnh khi Agent Mode phổ biến. Flat-rate không còn bền vững.</p>
+        <span class="principle">Liquidity trước, margin sau</span>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="year">11/2025</div>
+      <div class="content">
+        <h3>Series D $2.3B — valuation $29.3B</h3>
+        <p>Nvidia + Google tham gia. BugBot → Origin → Background Agents. Từ "editor" sang "platform toàn bộ SDLC".</p>
+        <span class="principle">Platform play — tool → hệ sinh thái</span>
+      </div>
+    </div>
+    <div class="timeline-item" style="border-left-color: #f59e0b;">
+      <div class="year" style="color: #f59e0b;">Loại bỏ</div>
+      <div class="content">
+        <h3>Các mốc đã loại và vì sao</h3>
+        <p>"Thêm support Python/TS" → feature parity. "Sửa UI/dark mode" → bug fix. "Thêm model mới" → operational. Chỉ giữ quyết định thay đổi chiến lược.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: User Segments -->
+<div class="slide">
+  <div class="slide-header">
+    <span class="num">§2</span>
+    <h2>Tệp user & JTBD</h2>
+  </div>
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Early Adopters (2023)</th>
+        <th>Tệp hiện tại (2025–2026)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Đặc điểm</td>
+        <td>Frontend/fullstack dev ở startup nhỏ, dùng VS Code 3+ năm, theo dõi AI Twitter, chịu "rough edges"</td>
+        <td>Engineer ở Fortune 500, EM quản lý team 10–50 người, cần compliance. Cả non-dev "vibe coders"</td>
+      </tr>
+      <tr>
+        <td>JTBD chính</td>
+        <td><em>"Giúp tôi viết code nhanh 3–5x, không phải rời editor"</em> → giảm thao tác lặp</td>
+        <td><em>"Giúp team ship nhanh + giữ chất lượng, chứng minh ROI cho CTO"</em> → tăng velocity toàn team</td>
+      </tr>
+      <tr>
+        <td>Trước đó</td>
+        <td>VS Code + Copilot + copy-paste từ ChatGPT/StackOverflow</td>
+        <td>VS Code + Copilot Business + internal review tool. Non-dev: thuê freelancer / no-code</td>
+      </tr>
+      <tr>
+        <td>Dịch chuyển</td>
+        <td colspan="2">Mốc #4 (Series A) → enterprise features. Mốc #5 (Cursor 2.0) → Agent Mode mở cửa cho non-dev</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- SLIDE 5: 4 Forces -->
+<div class="slide">
+  <div class="slide-header">
+    <span class="num">§2</span>
+    <h2>Switching Cost — 4 Forces</h2>
+  </div>
+  <div class="forces-grid">
+    <div class="force-card force-push">
+      <h4>① Push — Vấn đề với VS Code + Copilot</h4>
+      <p>Copilot chỉ là extension → không deep integrate. Copy-paste context liên tục. Multi-file refactor cực kỳ manual. "AI đang phụ trợ, không phải cộng tác."</p>
+    </div>
+    <div class="force-card force-pull">
+      <h4>② Pull — Sức hút của Cursor</h4>
+      <p>Tab nhảy file. Composer refactor toàn codebase. Agent Mode chạy terminal + fix lỗi tự động. Import VS Code config 1 click → switching gần zero friction.</p>
+    </div>
+    <div class="force-card force-habit">
+      <h4>③ Habit — Thói quen giữ lại</h4>
+      <p>"VS Code là muscle memory 5 năm." Hệ sinh thái extension khổng lồ. Team đã chuẩn hóa workflow. Enterprise IT chỉ approve tool trong whitelist.</p>
+    </div>
+    <div class="force-card force-anxiety">
+      <h4>④ Anxiety — Nỗi lo chuyển đổi</h4>
+      <p>"AI hallucinate code sai thì sao?" Chi phí usage-based khó budget. Cursor là startup — có tồn tại? Data code có an toàn trên server Cursor?</p>
+    </div>
+  </div>
+  <p style="margin-top: 24px; font-size: 14px; color: #94a3b8; text-align: center;">
+    <strong style="color: #10b981;">Lực mạnh nhất giữ user:</strong> Pull (Tab + Agent Mode tạo workflow mới) → quay về VS Code cảm thấy "bị cắt tay"
+  </p>
+</div>
+
+<!-- SLIDE 6: Predictions -->
+<div class="slide">
+  <div class="slide-header">
+    <span class="num">§3</span>
+    <h2>Ba dự đoán — 6–12 tháng tới</h2>
+  </div>
+  <div class="predictions">
+    <div class="prediction-card">
+      <div class="tag">Đe dọa Big Tech</div>
+      <h3>Microsoft tích hợp Agent Mode vào VS Code → Cursor phản ứng bằng platform play (Origin + Automations)</h3>
+      <p><strong>Lập luận:</strong> Timeline cho thấy Cursor đã mở rộng scope từ editor (Mốc 1–3) sang platform (Mốc 5–7). Tệp enterprise quan tâm toàn workflow (code → review → deploy) — ai sở hữu platform sẽ thắng, không phải editor.</p>
+    </div>
+    <div class="prediction-card">
+      <div class="tag">Mở rộng segment</div>
+      <h3>Đẩy mạnh non-developer (PM, designer, data analyst) — UX đơn giản hóa + gói pricing riêng</h3>
+      <p><strong>Lập luận:</strong> Tệp user §2 dịch chuyển: power-dev → enterprise → non-dev. Agent Mode (Mốc 5) giảm rào cản kỹ thuật gần zero. Thị trường non-dev lớn hơn nhiều so với chỉ phục vụ dev.</p>
+    </div>
+    <div class="prediction-card">
+      <div class="tag">Tính năng + kiếm tiền</div>
+      <h3>"Cursor for Teams" — shared codebase context + custom rules. Pricing hybrid: seat + usage credits</h3>
+      <p><strong>Lập luận:</strong> Mốc 6 đã chuyển sang usage-based. Tệp enterprise cần quản lý cost cấp team. Context chia sẻ tạo vòng lặp học mạnh hơn → moat từ dữ liệu proprietary.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: Closing -->
+<div class="slide slide-closing">
+  <h2>Key Takeaway</h2>
+  <p>Cursor không thắng vì "AI giỏi hơn" — mà vì hiểu workflow developer sâu hơn bất kỳ ai.</p>
+  <div class="key-insight">
+    <p>"Quyết định fork VS Code năm 2023 không phải quyết định kỹ thuật — đó là quyết định product. Nó cho phép Cursor định nghĩa lại 'tốt' là gì, và tạo switching cost mà không extension nào bắt chước được."</p>
+  </div>
+  <div class="meta" style="margin-top: 40px; font-size: 16px; color: #64748b;">
+    Kiều Thế Hiệp — 2A202601453 · K3 Product Sense Lab
+  </div>
+</div>
+
+</body>
+</html>
